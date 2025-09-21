@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:TodoX}",
+            "name": "Debug DemoApp",
+            "program": "${workspaceFolder:TodoX}/.build/debug/DemoApp",
+            "preLaunchTask": "swift: Build Debug DemoApp"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:TodoX}",
+            "name": "Release DemoApp",
+            "program": "${workspaceFolder:TodoX}/.build/release/DemoApp",
+            "preLaunchTask": "swift: Build Release DemoApp"
+        }
+    ]
+}
