@@ -9,103 +9,119 @@ import SwiftUI
 
 public struct TodoXTabView: View {
     @State private var selectedTab = 0
+    private let onClose: (() -> Void)?
     
-    public init() {}
+    // Public initializer with optional onClose callback
+    public init(onClose: (() -> Void)? = nil) {
+        self.onClose = onClose
+    }
     
     public var body: some View {
-        ZStack(alignment: .bottom) {
-            // Main content
-            TabView(selection: $selectedTab) {
-                // My Notes Tab
-                HomeView()
-                    .tag(0)
+        NavigationStack {
+            ZStack(alignment: .bottom) {
+                // Main content
+                TabView(selection: $selectedTab) {
+                    // My Notes Tab
+                    HomeView()
+                        .tag(0)
+                    
+                    // Create Tab
+                    CreateView()
+                        .tag(1)
+                    
+                    // Favorites Tab
+                    FavoritesView()
+                        .tag(2)
+                }
+                .tabViewStyle(.automatic)
                 
-                // Create Tab
-                CreateView()
-                    .tag(1)
-                
-                // Favorites Tab
-                FavoritesView()
-                    .tag(2)
+                // Custom tab bar
+                CustomTabBar(selectedTab: $selectedTab)
             }
-            .tabViewStyle(.automatic)
-            
-            // Custom tab bar
-            CustomTabBar(selectedTab: $selectedTab)
+            .ignoresSafeArea(.keyboard)
+            .toolbar {
+                // Close button when embedded in other apps
+                if let onClose = onClose {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: onClose) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                Text("Back")
+                            }
+                        }
+                        .foregroundColor(.blue)
+                    }
+                }
+            }
         }
-        .ignoresSafeArea(.keyboard)
     }
 }
 
 // MARK: - Create View
 private struct CreateView: View {
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 30) {
-                Spacer()
-                
-                // Simple curved shape with plus icon
-                RoundedRectangle(cornerRadius: 25)
-                    .fill(Color.gray.opacity(0.2))
-                    .frame(width: 100, height: 100)
-                    .overlay {
-                        Image(systemName: "plus.circle")
-                            .font(.system(size: 40))
-                            .foregroundColor(.gray)
-                    }
-                
-                Text("Create")
-                    .font(.largeTitle)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
-                
-                Text("Create new notes and tasks")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Create")
-            .navigationBarTitleDisplayMode(.inline)
+        VStack(spacing: 30) {
+            Spacer()
+            
+            // Simple curved shape with plus icon
+            RoundedRectangle(cornerRadius: 25)
+                .fill(Color.gray.opacity(0.2))
+                .frame(width: 100, height: 100)
+                .overlay {
+                    Image(systemName: "plus.circle")
+                        .font(.system(size: 40))
+                        .foregroundColor(.gray)
+                }
+            
+            Text("Create")
+                .font(.largeTitle)
+                .fontWeight(.medium)
+                .foregroundColor(.primary)
+            
+            Text("Create new notes and tasks")
+                .font(.title3)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+            
+            Spacer()
         }
+        .padding()
+        .navigationTitle("Create")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
 // MARK: - Favorites View
 private struct FavoritesView: View {
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 30) {
-                Spacer()
-                
-                // Simple curved shape with heart icon
-                RoundedRectangle(cornerRadius: 25)
-                    .fill(Color.gray.opacity(0.2))
-                    .frame(width: 100, height: 100)
-                    .overlay {
-                        Image(systemName: "heart")
-                            .font(.system(size: 40))
-                            .foregroundColor(.gray)
-                    }
-                
-                Text("Favorites")
-                    .font(.largeTitle)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
-                
-                Text("Your favorite notes and tasks")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Favorites")
-            .navigationBarTitleDisplayMode(.inline)
+        VStack(spacing: 30) {
+            Spacer()
+            
+            // Simple curved shape with heart icon
+            RoundedRectangle(cornerRadius: 25)
+                .fill(Color.gray.opacity(0.2))
+                .frame(width: 100, height: 100)
+                .overlay {
+                    Image(systemName: "heart")
+                        .font(.system(size: 40))
+                        .foregroundColor(.gray)
+                }
+            
+            Text("Favorites")
+                .font(.largeTitle)
+                .fontWeight(.medium)
+                .foregroundColor(.primary)
+            
+            Text("Your favorite notes and tasks")
+                .font(.title3)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+            
+            Spacer()
         }
+        .padding()
+        .navigationTitle("Favorites")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
