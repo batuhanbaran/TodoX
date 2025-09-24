@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "navigator",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hmlongco/Navigator",
+      "state" : {
+        "revision" : "d0c13d7efd9e97e63d901bc53ba22d20da135557",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 2
+}

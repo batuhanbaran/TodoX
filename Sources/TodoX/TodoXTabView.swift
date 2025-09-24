@@ -6,16 +6,16 @@
 //
 
 import SwiftUI
+import NavigatorUI
 
 public struct TodoXTabView: View {
     @State private var selectedTab = 0
     private let onClose: (() -> Void)?
-    
-    // Public initializer with optional onClose callback
+
     public init(onClose: (() -> Void)? = nil) {
         self.onClose = onClose
     }
-    
+
     public var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
@@ -24,26 +24,19 @@ public struct TodoXTabView: View {
                     // My Notes Tab
                     HomeView()
                         .tag(0)
-                    
+
                     // Create Tab
                     CreateView()
                         .tag(1)
-                    
+
                     // Favorites Tab
                     FavoritesView()
                         .tag(2)
-
-                    Button {
-                        onClose?()
-                    } label: {
-                        Image(systemName: "rectangle.portrait.and.arrow.right")
-                    }
-                    .tag(2)
                 }
                 .tabViewStyle(.automatic)
-                
+
                 // Custom tab bar
-                CustomTabBar(selectedTab: $selectedTab)
+                CustomTabBar(selectedTab: $selectedTab, onClose: onClose)
             }
             .ignoresSafeArea(.keyboard)
         }
@@ -55,8 +48,6 @@ private struct CreateView: View {
     var body: some View {
         VStack(spacing: 30) {
             Spacer()
-            
-            // Simple curved shape with plus icon
             RoundedRectangle(cornerRadius: 25)
                 .fill(Color.gray.opacity(0.2))
                 .frame(width: 100, height: 100)
@@ -65,17 +56,14 @@ private struct CreateView: View {
                         .font(.system(size: 40))
                         .foregroundColor(.gray)
                 }
-            
             Text("Create")
                 .font(.largeTitle)
                 .fontWeight(.medium)
                 .foregroundColor(.primary)
-            
             Text("Create new notes and tasks")
                 .font(.title3)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            
             Spacer()
         }
         .padding()
@@ -89,8 +77,6 @@ private struct FavoritesView: View {
     var body: some View {
         VStack(spacing: 30) {
             Spacer()
-            
-            // Simple curved shape with heart icon
             RoundedRectangle(cornerRadius: 25)
                 .fill(Color.gray.opacity(0.2))
                 .frame(width: 100, height: 100)
@@ -99,17 +85,14 @@ private struct FavoritesView: View {
                         .font(.system(size: 40))
                         .foregroundColor(.gray)
                 }
-            
             Text("Favorites")
                 .font(.largeTitle)
                 .fontWeight(.medium)
                 .foregroundColor(.primary)
-            
             Text("Your favorite notes and tasks")
                 .font(.title3)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            
             Spacer()
         }
         .padding()
@@ -120,30 +103,36 @@ private struct FavoritesView: View {
 
 // MARK: - Custom Tab Bar
 private struct CustomTabBar: View {
+    @Environment(\.navigator) var navigator
     @Binding var selectedTab: Int
-    
+    let onClose: (() -> Void)?   // ⬅️ alınan closure
+
     private let tabs = [
-        (title: "My Notes", icon: "note.text"),
-        (title: "Create", icon: "plus.circle"),
-        (title: "Favorites", icon: "heart"),
-        (title: "SupernovaX", icon: "rectangle.portrait.and.arrow.right")
+        (title: "My Notes",   icon: "note.text"),
+        (title: "Create",     icon: "plus.circle"),
+        (title: "Favorites",  icon: "heart"),
+        (title: "SupernovaX", icon: "rectangle.portrait.and.arrow.right") // logout/exit action
     ]
-    
+
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(0..<tabs.count, id: \.self) { index in
+            ForEach(tabs.indices, id: \.self) { index in
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
-                        selectedTab = index
+                        if index == tabs.count - 1 {
+                            // Son tab: kapatma/çıkış aksiyonu
+                            navigator.dismiss()
+                            // selectedTab'ı değiştirmiyoruz, mevcut sekmede kal
+                        } else {
+                            selectedTab = index
+                        }
                     }
                 } label: {
                     VStack(spacing: 6) {
-                        // Icon
                         Image(systemName: tabs[index].icon)
                             .font(.system(size: 18, weight: .medium))
                             .foregroundColor(selectedTab == index ? .primary : .gray)
-                        
-                        // Tab title
+
                         Text(tabs[index].title)
                             .font(.caption2)
                             .fontWeight(selectedTab == index ? .medium : .regular)
@@ -151,6 +140,8 @@ private struct CustomTabBar: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
+                    // İstersen: son tab için farklı stil
+                    .opacity(index == tabs.count - 1 ? 0.9 : 1.0)
                 }
                 .buttonStyle(PlainButtonStyle())
             }
@@ -158,7 +149,6 @@ private struct CustomTabBar: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .background {
-            // Simple curved background
             RoundedRectangle(cornerRadius: 20)
                 .fill(Color.gray.opacity(0.1))
                 .background {
@@ -172,5 +162,7 @@ private struct CustomTabBar: View {
 }
 
 #Preview {
-    TodoXTabView()
+    TodoXTabView {
+        print("onClose çalıştı")
+    }
 }
