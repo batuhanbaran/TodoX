@@ -32,6 +32,13 @@ public struct TodoXTabView: View {
                     // Favorites Tab
                     FavoritesView()
                         .tag(2)
+
+                    Button {
+                        onClose?()
+                    } label: {
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                    }
+                    .tag(2)
                 }
                 .tabViewStyle(.automatic)
                 
@@ -39,20 +46,6 @@ public struct TodoXTabView: View {
                 CustomTabBar(selectedTab: $selectedTab)
             }
             .ignoresSafeArea(.keyboard)
-            .toolbar {
-                // Close button when embedded in other apps
-                if let onClose = onClose {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: onClose) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "chevron.left")
-                                Text("Back")
-                            }
-                        }
-                        .foregroundColor(.blue)
-                    }
-                }
-            }
         }
     }
 }
@@ -132,7 +125,8 @@ private struct CustomTabBar: View {
     private let tabs = [
         (title: "My Notes", icon: "note.text"),
         (title: "Create", icon: "plus.circle"),
-        (title: "Favorites", icon: "heart")
+        (title: "Favorites", icon: "heart"),
+        (title: "SupernovaX", icon: "rectangle.portrait.and.arrow.right")
     ]
     
     var body: some View {
