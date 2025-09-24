@@ -10,11 +10,8 @@ import NavigatorUI
 
 public struct TodoXTabView: View {
     @State private var selectedTab = 0
-    private let onClose: (() -> Void)?
 
-    public init(onClose: (() -> Void)? = nil) {
-        self.onClose = onClose
-    }
+    public init() {}
 
     public var body: some View {
         NavigationStack {
@@ -36,7 +33,7 @@ public struct TodoXTabView: View {
                 .tabViewStyle(.automatic)
 
                 // Custom tab bar
-                CustomTabBar(selectedTab: $selectedTab, onClose: onClose)
+                CustomTabBar(selectedTab: $selectedTab)
             }
             .ignoresSafeArea(.keyboard)
         }
@@ -105,7 +102,6 @@ private struct FavoritesView: View {
 private struct CustomTabBar: View {
     @Environment(\.navigator) var navigator
     @Binding var selectedTab: Int
-    let onClose: (() -> Void)?   // ⬅️ alınan closure
 
     private let tabs = [
         (title: "My Notes",   icon: "note.text"),
@@ -162,7 +158,5 @@ private struct CustomTabBar: View {
 }
 
 #Preview {
-    TodoXTabView {
-        print("onClose çalıştı")
-    }
+    TodoXTabView()
 }
