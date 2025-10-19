@@ -17,25 +17,39 @@ public struct TodoXTabView: View {
         NavigationStack {
             ZStack(alignment: .bottom) {
                 // Main content
-                TabView(selection: $selectedTab) {
-                    // My Notes Tab
-                    HomeView()
-                        .tag(0)
+                if #available(iOS 18.0, *) {
+                    // iOS 18+ için optimize edilmiş
+                    TabView(selection: $selectedTab) {
+                        HomeView()
+                            .tag(0)
 
-                    // Create Tab
-                    CreateView()
-                        .tag(1)
+                        CreateView()
+                            .tag(1)
 
-                    // Favorites Tab
-                    FavoritesView()
-                        .tag(2)
+                        FavoritesView()
+                            .tag(2)
+                    }
+                    .tabViewStyle(.page(indexDisplayMode: .never))
+                } else {
+                    // iOS 17 ve altı
+                    TabView(selection: $selectedTab) {
+                        HomeView()
+                            .tag(0)
+
+                        CreateView()
+                            .tag(1)
+
+                        FavoritesView()
+                            .tag(2)
+                    }
+                    .tabViewStyle(.automatic)
                 }
-                .tabViewStyle(.automatic)
 
                 // Custom tab bar
                 CustomTabBar(selectedTab: $selectedTab)
             }
             .ignoresSafeArea(.keyboard)
+            .ignoresSafeArea(edges: .bottom) // iOS 18 boşluk düzeltmesi
         }
     }
 }
@@ -107,7 +121,7 @@ private struct CustomTabBar: View {
         (title: "My Notes",   icon: "note.text"),
         (title: "Create",     icon: "plus.circle"),
         (title: "Favorites",  icon: "heart"),
-        (title: "SupernovaX", icon: "rectangle.portrait.and.arrow.right") // logout/exit action
+        (title: "SupernovaX", icon: "rectangle.portrait.and.arrow.right")
     ]
 
     var body: some View {
@@ -116,9 +130,7 @@ private struct CustomTabBar: View {
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         if index == tabs.count - 1 {
-                            // Son tab: kapatma/çıkış aksiyonu
                             navigator.dismiss()
-                            // selectedTab'ı değiştirmiyoruz, mevcut sekmede kal
                         } else {
                             selectedTab = index
                         }
@@ -136,7 +148,6 @@ private struct CustomTabBar: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
-                    // İstersen: son tab için farklı stil
                     .opacity(index == tabs.count - 1 ? 0.9 : 1.0)
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -153,7 +164,21 @@ private struct CustomTabBar: View {
                 }
         }
         .padding(.horizontal, 20)
-        .padding(.bottom, 10)
+        .padding(.bottom, bottomPadding) // Dinamik padding
+    }
+
+    // iOS versiyonuna göre dinamik padding
+    private var bottomPadding: CGFloat {
+        if #available(iOS 18.0, *) {
+            // iOS 18'de safe area'yı otomatik kullan
+            let window = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .first?.windows.first
+            return (window?.safeAreaInsets.bottom ?? 0) + 10
+        } else {
+            // iOS 17 ve altı için sabit padding
+            return 10
+        }
     }
 }
 
